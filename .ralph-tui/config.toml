@@ -1,4 +1,4 @@
 maxIterations = 10
-agent = "claude"
+agent = "opencode"
 tracker = "json"
 configVersion = "2.1"

@@ -1,14 +1,14 @@
 {
   "version": 1,
-  "sessionId": "f1cd14cf-00d1-4223-8886-190109fd1d4c",
+  "sessionId": "bbdbba71-dd13-4f31-b386-aab0e5bc3531",
   "status": "running",
-  "startedAt": "2026-02-13T15:38:51.828Z",
-  "updatedAt": "2026-02-13T15:38:56.501Z",
-  "currentIteration": 1,
-  "maxIterations": 1,
+  "startedAt": "2026-02-13T16:24:41.647Z",
+  "updatedAt": "2026-02-13T16:24:41.650Z",
+  "currentIteration": 0,
+  "maxIterations": 10,
   "tasksCompleted": 0,
   "isPaused": false,
-  "agentPlugin": "claude",
+  "agentPlugin": "opencode",
   "trackerState": {
     "plugin": "json",
     "prdPath": "./prd.json",
@@ -34,22 +34,9 @@
       }
     ]
   },
-  "iterations": [
-    {
-      "iteration": 1,
-      "status": "failed",
-      "taskId": "US-001",
-      "taskTitle": "Create hello world script",
-      "taskCompleted": false,
-      "durationMs": 3606,
-      "startedAt": "2026-02-13T15:38:51.881Z",
-      "endedAt": "2026-02-13T15:38:55.487Z"
-    }
-  ],
+  "iterations": [],
   "skippedTaskIds": [],
   "cwd": "/home/ubuntu/ralph-test",
-  "activeTaskIds": [
-    "US-001"
-  ],
+  "activeTaskIds": [],
   "subagentPanelVisible": false
 }

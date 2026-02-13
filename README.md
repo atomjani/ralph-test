@@ -1,111 +1,111 @@
-# Ralph-tui OpenCode Integration Test
+# Ralph-tui OpenCode Integration
 
-This project demonstrates Ralph-tui integration with OpenCode AI agent using free models from OpenRouter.
-
-## Working Free Models
-
-Tested and working with OpenRouter free tier:
-- `z-ai/glm-4.5-air:free` - Completely free, works via API (recommended)
-- `qwen/qwen-coder-32b-instruct` - Cheap coding model
+This project demonstrates Ralph-tui integration with OpenCode using OpenRouter.
 
 ## Setup
 
-1. Install Ralph-tui:
+1. **Install Ralph-tui:**
    ```bash
    bun install -g ralph-tui
    ```
 
-2. Configure OpenCode with OpenRouter free model:
+2. **Configure OpenCode with OpenRouter:**
    ```bash
-   # Create ~/.config/opencode/opencode.json
-   {
-     "$schema": "https://opencode.ai/config.json",
-     "model": "z-ai/glm-4.5-air:free"
-   }
-   
-   # Set environment variables
+   # Set environment variables (required for ralph-tui)
    export OPENAI_API_BASE="https://openrouter.ai/api/v1"
    export OPENAI_API_KEY="your-openrouter-api-key"
+   
+   # Or add to your ~/.bashrc / ~/.zshrc
+   echo 'export OPENAI_API_BASE="https://openrouter.ai/api/v1"' >> ~/.bashrc
+   echo 'export OPENAI_API_KEY="your-api-key"' >> ~/.bashrc
    ```
 
-3. Initialize project:
+3. **Initialize project:**
    ```bash
-   ./ralph.sh init
+   ralph-tui setup
    ```
 
-## Known Issues
+## Configuration
 
-### CLI Authentication Required
-Both OpenCode and Claude Code require interactive login - they don't work with API keys in headless mode:
-- **OpenCode**: "Session not found" error in non-interactive mode
-- **Claude Code**: Requires `claude auth login` (web-based)
-
-### Solutions:
-1. **Use Claude Code** - Run `claude auth login` interactively
-2. **Add credits to OpenRouter** - Paid models work with OpenCode
-3. **Use different agent** - Some agents like droid/gemini might work
-
-## API Test (Works!)
-
-The free model works when called directly via API:
-```bash
-curl -X POST "https://openrouter.ai/api/v1/chat/completions" \
-  -H "Authorization: Bearer YOUR_API_KEY" \
-  -H "Content-Type: application/json" \
-  -d '{
-    "model": "z-ai/glm-4.5-air:free",
-    "max_tokens": 50,
-    "messages": [{"role": "user", "content": "say hi"}]
-  }'
-# Returns: {"choices":[{"message":{"content":"Hello!"}}],"usage":{"cost":0}}'
+### OpenCode Config (~/.config/opencode/opencode.json)
+```json
+{
+  "$schema": "https://opencode.ai/config.json",
+  "model": "openrouter/anthropic/claude-sonnet-4-20250514"
+}
 ```
+
+### Ralph Config (.ralph-tui/config.toml)
+```toml
+tracker = "json"
+agent = "opencode"
+maxIterations = 10
+```
+
+## OpenRouter Free Models
+
+Tested working via API:
+- `z-ai/glm-4.5-air:free` - Totally free
+- `deepseek/deepseek-r1-0528:free` - Reasoning model
+- `qwen/qwen3-coder:free` - Coding focused
+
+**Note:** OpenCode CLI has issues running in headless/non-interactive mode with any model.
 
 ## Usage
 
 ```bash
-# Check agent health
-OPENAI_API_BASE="https://openrouter.ai/api/v1" OPENAI_API_KEY="your-key" ./ralph.sh doctor
+# Check system info
+ralph-tui info
 
-# Create a new PRD
-OPENAI_API_BASE="https://openrouter.ai/api/v1" OPENAI_API_KEY="your-key" ./ralph.sh prd
+# List available agents
+ralph-tui plugins agents
 
-# Run tasks (requires CLI auth or paid API)
-./ralph.sh run --prd ./prd.json
+# Check configuration
+ralph-tui config show
 
-# View status
-./ralph.sh status
+# Run in TUI mode (interactive)
+ralph-tui run --prd ./prd.json
+
+# Run headless (requires working agent)
+ralph-tui run --prd ./prd.json --headless --iterations 1
 ```
 
-## Configuration
+## Important Notes
 
-Edit `.ralph-tui/config.toml`:
-```toml
-tracker = "json"
-agent = "opencode"  # or "claude"
-maxIterations = 10
+### OpenCode Limitations
+- OpenCode CLI requires interactive TUI session - doesn't work in pure headless/CI mode
+- Works: `opencode` (starts TUI), `ralph-tui run` (with TUI)
+- Doesn't work: `opencode run "command"`, ralph-tui headless mode
+
+### Solutions
+1. **Use TUI mode** - Run `ralph-tui run` without `--headless`
+2. **Add OpenRouter credits** - Paid models may work better
+3. **Use Claude Code** - `bun add -g @anthropic-ai/claude-code`
+
+## Project Structure
+
+```
+ralph-test/
+├── .ralph-tui/
+│   └── config.toml       # Ralph configuration
+├── prd.json              # Task definitions
+├── ralph.sh             # Helper script
+└── README.md            # This file
 ```
 
-## Files
+## GitHub
 
-- `ralph.sh` - Helper script for common operations
-- `prd.json` - Task definitions (userStories format)
-- `.ralph-tui/config.toml` - Ralph configuration
+Repository: https://github.com/atomjani/ralph-test
 
 ## Tested Commands
 
 | Command | Status |
 |---------|--------|
 | `ralph-tui --version` | ✓ 0.7.1 |
-| `ralph-tui plugins agents` | ✓ (7 agents) |
-| `ralph-tui plugins trackers` | ✓ (4 trackers) |
+| `ralph-tui plugins agents` | ✓ 7 agents |
+| `ralph-tui plugins trackers` | ✓ 4 trackers |
 | `ralph-tui config show` | ✓ |
 | `ralph-tui skills list/install` | ✓ |
-| `ralph-tui template show` | ✓ |
-| OpenRouter API (curl) | ✓ Free model works! |
-| `ralph-tui run` | ✗ CLI auth required |
-
-## Summary
-
-- **OpenRouter free model works via API** (z-ai/glm-4.5-air:free)
-- **Ralph-tui CLI integration requires paid API or Claude Code login**
-- Project is ready for GitHub push once authenticated
+| OpenRouter API (curl) | ✓ |
+| `ralph-tui run` (TUI) | Requires setup |
+| `ralph-tui run --headless` | ✗ OpenCode limitation |
