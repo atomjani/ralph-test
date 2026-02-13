@@ -1,0 +1,33 @@
+{
+  "version": "1.0.0",
+  "project": {
+    "name": "Ralph Test Project",
+    "description": "Testing Ralph-tui with OpenCode integration"
+  },
+  "tasks": [
+    {
+      "id": "1",
+      "title": "Create hello world script",
+      "description": "Create a simple hello world script to test the setup",
+      "priority": "high",
+      "status": "pending",
+      "dependencies": []
+    },
+    {
+      "id": "2", 
+      "title": "Add configuration file",
+      "description": "Create a config.yaml with basic settings",
+      "priority": "medium",
+      "status": "pending",
+      "dependencies": ["1"]
+    },
+    {
+      "id": "3",
+      "title": "Write unit tests",
+      "description": "Add basic unit tests for the script",
+      "priority": "low",
+      "status": "pending",
+      "dependencies": ["2"]
+    }
+  ]
+}
