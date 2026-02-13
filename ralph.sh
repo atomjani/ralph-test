@@ -14,6 +14,9 @@ if [ -n "$OPENROUTER_API_KEY" ]; then
     export OPENAI_API_KEY="$OPENROUTER_API_KEY"
 fi
 
+# Also export for ralph-tui agent
+export OPENROUTER_API_KEY
+
 show_help() {
     cat << EOF
 Ralph-tui Helper Script
