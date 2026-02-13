@@ -7,6 +7,13 @@ set -e
 RALPH_PROJECT="${RALPH_PROJECT:-.}"
 RALPH_AGENT="${RALPH_AGENT:-opencode}"
 
+# OpenRouter configuration (set your API key here)
+OPENROUTER_API_KEY="${OPENROUTER_API_KEY:-}"
+if [ -n "$OPENROUTER_API_KEY" ]; then
+    export OPENAI_API_BASE="https://openrouter.ai/api/v1"
+    export OPENAI_API_KEY="$OPENROUTER_API_KEY"
+fi
+
 show_help() {
     cat << EOF
 Ralph-tui Helper Script
@@ -27,14 +34,15 @@ Commands:
     help            Show this help message
 
 Environment Variables:
-    RALPH_PROJECT   Project directory (default: current dir)
-    RALPH_AGENT     Agent to use (default: opencode)
+    RALPH_PROJECT       Project directory (default: current dir)
+    RALPH_AGENT         Agent to use (default: opencode)
+    OPENROUTER_API_KEY  OpenRouter API key (for OpenCode)
 
 Examples:
-    ralph.sh init
-    ralph.sh run --prd ./prd.json
-    ralph.sh run-headless --iterations 5
-    ralph.sh doctor
+    OPENROUTER_API_KEY=sk-... ralph.sh init
+    OPENROUTER_API_KEY=sk-... ralph.sh doctor
+    OPENROUTER_API_KEY=sk-... ralph.sh run --prd ./prd.json
+    ralph.sh tasks
     ralph.sh logs 3
 
 EOF

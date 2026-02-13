@@ -9,13 +9,17 @@ This project demonstrates Ralph-tui integration with OpenCode AI agent.
    bun install -g ralph-tui
    ```
 
-2. Configure OpenCode:
+2. Configure OpenCode with OpenRouter:
    ```bash
-   # Set your API key
-   export ANTHROPIC_API_KEY="your-api-key"
+   # Create ~/.config/opencode/opencode.json
+   {
+     "$schema": "https://opencode.ai/config.json",
+     "model": "openrouter/anthropic/claude-3.5-sonnet"
+   }
    
-   # Or use OpenRouter
-   export OPENROUTER_API_KEY="your-api-key"
+   # Set environment variables before running ralph-tui
+   export OPENAI_API_BASE="https://openrouter.ai/api/v1"
+   export OPENAI_API_KEY="your-openrouter-api-key"
    ```
 
 3. Initialize project:
@@ -26,17 +30,17 @@ This project demonstrates Ralph-tui integration with OpenCode AI agent.
 ## Usage
 
 ```bash
-# Check agent health
-./ralph.sh doctor
+# Check agent health (requires API key)
+OPENAI_API_BASE="https://openrouter.ai/api/v1" OPENAI_API_KEY="your-key" ./ralph.sh doctor
 
 # Create a new PRD
-./ralph.sh prd
+OPENAI_API_BASE="https://openrouter.ai/api/v1" OPENAI_API_KEY="your-key" ./ralph.sh prd
 
 # Run tasks
-./ralph.sh run --prd ./prd.json
+OPENAI_API_BASE="https://openrouter.ai/api/v1" OPENAI_API_KEY="your-key" ./ralph.sh run --prd ./prd.json
 
 # Run headless (for CI/CD)
-./ralph.sh run-headless --prd ./prd.json --iterations 10
+OPENAI_API_BASE="https://openrouter.ai/api/v1" OPENAI_API_KEY="your-key" ./ralph.sh run-headless --prd ./prd.json --iterations 10
 
 # View status
 ./ralph.sh status
@@ -63,13 +67,21 @@ maxIterations = 10
 
 ## Tested Commands
 
-- `ralph-tui --version` - ✓
-- `ralph-tui plugins agents` - ✓
-- `ralph-tui plugins trackers` - ✓
-- `ralph-tui config show` - ✓
-- `ralph-tui skills list` - ✓
-- `ralph-tui skills install` - ✓
-- `ralph-tui template show` - ✓
-- `ralph-tui doctor` - Requires API key
-- `ralph-tui create-prd` - Requires API key
-- `ralph-tui run` - Requires API key
+| Command | Status |
+|---------|--------|
+| `ralph-tui --version` | ✓ |
+| `ralph-tui plugins agents` | ✓ (7 agents) |
+| `ralph-tui plugins trackers` | ✓ (4 trackers) |
+| `ralph-tui config show` | ✓ |
+| `ralph-tui skills list` | ✓ (4 skills) |
+| `ralph-tui skills install` | ✓ |
+| `ralph-tui template show` | ✓ |
+| `ralph-tui doctor` | Requires API key with credits |
+| `ralph-tui create-prd` | Requires API key with credits |
+| `ralph-tui run` | Requires API key with credits |
+
+## Notes
+
+- OpenRouter API requires credits for the API to work
+- The "Session not found" error in preflight is a known issue with OpenCode in non-interactive mode
+- For production use, consider using Claude Code as the agent instead
