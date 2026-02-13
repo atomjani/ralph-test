@@ -1,0 +1,15 @@
+{
+  "id": "f1cd14cf-00d1-4223-8886-190109fd1d4c",
+  "status": "interrupted",
+  "startedAt": "2026-02-13T15:38:50.923Z",
+  "updatedAt": "2026-02-13T15:38:56.506Z",
+  "agentPlugin": "claude",
+  "trackerPlugin": "json",
+  "prdPath": "./prd.json",
+  "currentIteration": 1,
+  "maxIterations": 1,
+  "totalTasks": 0,
+  "tasksCompleted": 0,
+  "cwd": "/home/ubuntu/ralph-test",
+  "endedAt": "2026-02-13T15:38:56.506Z"
+}

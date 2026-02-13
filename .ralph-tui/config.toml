@@ -1,3 +1,4 @@
-tracker = "json"
-agent = "opencode"
 maxIterations = 10
+agent = "claude"
+tracker = "json"
+configVersion = "2.1"

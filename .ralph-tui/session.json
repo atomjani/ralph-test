@@ -1,0 +1,55 @@
+{
+  "version": 1,
+  "sessionId": "f1cd14cf-00d1-4223-8886-190109fd1d4c",
+  "status": "running",
+  "startedAt": "2026-02-13T15:38:51.828Z",
+  "updatedAt": "2026-02-13T15:38:56.501Z",
+  "currentIteration": 1,
+  "maxIterations": 1,
+  "tasksCompleted": 0,
+  "isPaused": false,
+  "agentPlugin": "claude",
+  "trackerState": {
+    "plugin": "json",
+    "prdPath": "./prd.json",
+    "totalTasks": 3,
+    "tasks": [
+      {
+        "id": "US-001",
+        "title": "Create hello world script",
+        "status": "open",
+        "completedInSession": false
+      },
+      {
+        "id": "US-002",
+        "title": "Add configuration file",
+        "status": "open",
+        "completedInSession": false
+      },
+      {
+        "id": "US-003",
+        "title": "Write unit tests",
+        "status": "open",
+        "completedInSession": false
+      }
+    ]
+  },
+  "iterations": [
+    {
+      "iteration": 1,
+      "status": "failed",
+      "taskId": "US-001",
+      "taskTitle": "Create hello world script",
+      "taskCompleted": false,
+      "durationMs": 3606,
+      "startedAt": "2026-02-13T15:38:51.881Z",
+      "endedAt": "2026-02-13T15:38:55.487Z"
+    }
+  ],
+  "skippedTaskIds": [],
+  "cwd": "/home/ubuntu/ralph-test",
+  "activeTaskIds": [
+    "US-001"
+  ],
+  "subagentPanelVisible": false
+}
