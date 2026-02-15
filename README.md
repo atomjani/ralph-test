@@ -1,5 +1,35 @@
 # Ralph-tui OpenCode Integration
 
+This project includes Ralph-tui integration with OpenCode using OpenRouter, plus a Monitor system.
+
+## Monitor - Web, CLI és TUI
+
+A monitor a Ralph TUI projektek megfigyelésére szolgál.
+
+### Fájlok
+- `ralph-monitor.sh` - CLI monitor
+- `ralph-tui-monitor.sh` - Interaktív TUI
+- `server.js` - Express API
+- `public/` - Web UI
+- `install.sh` - Automatikus telepítő
+
+### Telepítés
+```bash
+git clone https://github.com/atomjani/ralph-test.git
+cd ralph-test
+chmod +x install.sh
+./install.sh
+```
+
+### Használat
+```
+Web:  http://<IP>:8080
+CLI:  rmon status
+TUI:  rmontui
+```
+
+## Ralph TUI Setup
+
 This project demonstrates Ralph-tui integration with OpenCode using OpenRouter.
 
 ## Setup
