@@ -1,0 +1,224 @@
+<!DOCTYPE html>
+<html lang="hu">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ralph TUI Monitor</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #1a1a2e; color: #e8e8e8;
+        }
+        .header {
+            background: #16213e; padding: 1rem; border-bottom: 2px solid #0f3460;
+            display: flex; justify-content: space-between; align-items: center;
+        }
+        .header h1 { font-size: 1.2rem; }
+        .card { background: #16213e; margin: 1rem; border-radius: 8px; overflow: hidden; }
+        .card-header { background: #0f3460; padding: 0.75rem 1rem; font-weight: 600; }
+        .card-body { padding: 1rem; }
+        .row { display: flex; flex-wrap: wrap; }
+        .col { flex: 1; min-width: 300px; padding: 0 0.5rem; }
+        .status-badge {
+            padding: 0.25rem 0.75rem; border-radius: 20px; font-size: 0.8rem; font-weight: 600;
+        }
+        .bg-success { background: #00d26a; color: #000; }
+        .bg-warning { background: #ffc107; color: #000; }
+        .bg-info { background: #0dcaf0; color: #000; }
+        .task-item { padding: 0.75rem 1rem; border-bottom: 1px solid #333; display: flex; align-items: center; }
+        .task-icon { margin-right: 0.5rem; font-size: 1.2rem; }
+        .text-muted { color: #888; }
+        .text-success { color: #00d26a; }
+        .text-danger { color: #dc3545; }
+        .log-content {
+            background: #0d0d0d; color: #00ff00; font-family: monospace;
+            font-size: 0.75rem; padding: 1rem; max-height: 300px; overflow-y: auto;
+        }
+        select, button {
+            padding: 0.5rem 1rem; border: none; border-radius: 4px; margin: 0.5rem;
+        }
+        select { background: #0f3460; color: #fff; }
+        .btn { background: #0f3460; color: #fff; cursor: pointer; }
+        @media (max-width: 600px) {
+            .col { flex: 100%; }
+            .header h1 { font-size: 1rem; }
+        }
+    </style>
+</head>
+<body onload="loadAll()">
+    <noscript>
+        <div style="padding:2rem;background:#16213e;color:#fff;">
+            <h1>Ralph TUI Monitor</h1>
+            <p>JavaScript required. Enable JS in your browser.</p>
+            <p>Or use CLI: <code>rmon status</code></p>
+        </div>
+    </noscript>
+    <div class="header">
+        <h1>📟 Ralph TUI Monitor</h1>
+        <div>
+            <span id="lastUpdate" class="text-muted" style="font-size: 0.8rem;"></span>
+            <button class="btn" onclick="loadAll()">🔄</button>
+        </div>
+    </div>
+    
+    <div id="loading" style="padding:2rem;text-align:center;">Loading...</div>
+    
+    <div id="content" style="display:none;">
+
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Session Status <span id="statusBadge" class="status-badge">-</span></div>
+                <div class="card-body" id="sessionInfo">Loading...</div>
+            </div>
+            <div class="card">
+                <div class="card-header">Active Task</div>
+                <div class="card-body" id="activeTask">-</div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Tasks</div>
+                <div id="taskList">Loading...</div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col">
+            <div class="card">
+                <div class="card-header">History</div>
+                <div id="historyList">Loading...</div>
+            </div>
+        </div>
+        <div class="col">
+            <div class="card">
+                <div class="card-header">Processes</div>
+                <div id="processList">Loading...</div>
+            </div>
+        </div>
+    </div>
+
+    <div class="card" style="margin: 0.5rem;">
+        <div class="card-header">
+            Logs <select id="logSelect" style="margin: 0;"><option value="">Select task...</option></select>
+        </div>
+        <div class="log-content" id="logContent">Select a task...</div>
+    </div>
+
+    <script>
+        const API = '';
+        
+        async function fetchWithTimeout(url, ms=3000) {
+            const ctrl = new AbortController();
+            const id = setTimeout(() => ctrl.abort(), ms);
+            try {
+                const r = await fetch(url, {signal: ctrl.signal});
+                clearTimeout(id);
+                return r;
+            } catch(e) {
+                clearTimeout(id);
+                throw e;
+            }
+        }
+        
+        function getIcon(s) {
+            const m = {'open':'○','in_progress':'◐','completed':'✓','failed':'✗','blocked':'■'};
+            return m[s] || '?';
+        }
+        
+        async function loadStatus() {
+            try {
+                const r = await fetchWithTimeout(API+'/api/status');
+                const d = await r.json();
+                if(d.error) return document.getElementById('sessionInfo').innerHTML = d.error;
+                
+                const c = d.status==='running'?'bg-success':d.status==='interrupted'?'bg-warning':'bg-info';
+                document.getElementById('statusBadge').className='status-badge '+c;
+                document.getElementById('statusBadge').textContent=d.status;
+                document.getElementById('sessionInfo').innerHTML = 
+                    '<small class="text-muted">ID:</small> '+(d.sessionId||'').slice(0,8)+'<br>'+
+                    '<small class="text-muted">Agent:</small> '+d.agent+'<br>'+
+                    '<small class="text-muted">Progress:</small> '+d.currentIteration+'/'+d.maxIterations+'<br>'+
+                    '<small class="text-muted">Tasks:</small> '+d.tasksCompleted+'/'+d.totalTasks;
+                document.getElementById('lastUpdate').textContent = new Date().toLocaleTimeString();
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadTasks() {
+            try {
+                const r = await fetchWithTimeout(API+'/api/tasks');
+                const d = await r.json();
+                if(!d.tasks.length) return document.getElementById('taskList').innerHTML='<div class="task-item">No tasks</div>';
+                
+                let h = '';
+                d.tasks.forEach(t => {
+                    h += '<div class="task-item" onclick="loadLogs(\''+t.id+'\')">'+
+                        '<span class="task-icon">'+getIcon(t.status)+'</span>'+
+                        '<strong>'+t.id+'</strong> - '+t.title+'</div>';
+                });
+                document.getElementById('taskList').innerHTML = h;
+                
+                const s = document.getElementById('logSelect');
+                s.innerHTML = '<option value="">Select...</option>';
+                d.tasks.forEach(t => s.innerHTML += '<option value="'+t.id+'">'+t.id+'</option>');
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadHistory() {
+            try {
+                const r = await fetchWithTimeout(API+'/api/history');
+                const d = await r.json();
+                if(!d.iterations.length) return document.getElementById('historyList').innerHTML='<div class="task-item">No iterations</div>';
+                
+                let h = '';
+                d.iterations.forEach(i => {
+                    const ic = i.status==='success'?'✓':i.status==='failed'?'✗':'◐';
+                    const col = i.status==='success'?'text-success':i.status==='failed'?'text-danger':'text-warning';
+                    h += '<div class="task-item"><span class="'+col+'">'+ic+'</span> <strong>'+i.taskId+'</strong> ('+Math.round(i.durationMs/1000)+'s)</div>';
+                });
+                document.getElementById('historyList').innerHTML = h;
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadProcesses() {
+            try {
+                const r = await fetchWithTimeout(API+'/api/processes');
+                const d = await r.json();
+                let h = '<div class="task-item"><strong>Ralph:</strong></div>';
+                h += d.ralph.length ? d.ralph.map(p=>'<div class="task-item" style="font-size:0.7rem">'+p.slice(0,60)+'</div>').join('') : '<div class="task-item text-muted">Not running</div>';
+                h += '<div class="task-item"><strong>OpenCode:</strong></div>';
+                h += d.opencode.length ? d.opencode.map(p=>'<div class="task-item" style="font-size:0.7rem">'+p.slice(0,60)+'</div>').join('') : '<div class="task-item text-muted">Not running</div>';
+                document.getElementById('processList').innerHTML = h;
+            } catch(e) { console.error(e); }
+        }
+        
+        async function loadLogs(id) {
+            if(!id) return document.getElementById('logContent').textContent='Select a task...';
+            document.getElementById('logSelect').value = id;
+            try {
+                const r = await fetchWithTimeout(API+'/api/logs/'+id);
+                const d = await r.json();
+                document.getElementById('logContent').textContent = d.log;
+            } catch(e) { document.getElementById('logContent').textContent = 'Error'; }
+        }
+        
+        async function loadAll() {
+            try {
+                await Promise.all([loadStatus(),loadTasks(),loadHistory(),loadProcesses()]);
+                document.getElementById('loading').style.display = 'none';
+                document.getElementById('content').style.display = 'block';
+            } catch(e) {
+                document.getElementById('loading').textContent = 'Error: ' + e.message;
+            }
+        }
+        
+        document.getElementById('logSelect').onchange = e => loadLogs(e.target.value);
+        
+        loadAll();
+        setInterval(loadAll, 5000);
+    </script>
+</div>
+</body>
+</html>
